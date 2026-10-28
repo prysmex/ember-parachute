@@ -6,8 +6,9 @@ A v2 addon, in TypeScript, on native classes, ready for Ember 8. See [Upgrading 
 
 ### Breaking
 
+- Published as `prysmex-ember-parachute` (was `ember-parachute`): change the package and its imports.
 - Ember 5.8 or later, Node 20 or later.
-- The route hooks are no longer installed by an initializer of the addon's: call `installParachute()`, or re-export `ember-parachute/initializer` from `app/initializers`.
+- The route hooks are no longer installed by an initializer of the addon's: call `installParachute()`, or re-export `prysmex-ember-parachute/initializer` from `app/initializers`.
 - Hooks are no longer sent as Ember events (`addListener` from `@ember/object/events`, deprecated in Ember 7.4): use `addParachuteListener`, or pass Ember's `sendEvent` to `installParachute({ sendEvent })`.
 - `queryParamsDidChange`'s `event.changed` reads a query param without `deserialize` as the controller does (`{ page: 2 }`, was `{ page: '2' }`).
 - The stage 1 `@queryParam` / `@withParachute` decorators are replaced by new ones on today's decorators: `@queryParam` fields are tracked, and `@withParachute` is required.
@@ -20,9 +21,9 @@ A v2 addon, in TypeScript, on native classes, ready for Ember 8. See [Upgrading 
 
 - `QueryParams#mixInto(Base)`: a native, typed subclass.
 - `QueryParams#forLink`, `#serialize`, `#deserialize`: links, `urlFor` and addresses read without a route.
-- `ember-parachute/adapters`: `integer`, `number`, `boolean`, `json`, `list`, `oneOf`, `date`.
+- `prysmex-ember-parachute/adapters`: `integer`, `number`, `boolean`, `json`, `list`, `oneOf`, `date`.
 - `queryParamsWithDefaults`, `addParachuteListener`, `uninstallParachute`, `isParachuteInstalled`, `QueryParamValues`.
-- `ember-parachute/test-support`: `RecordingLocation`, `recordParachuteEvents`.
+- `prysmex-ember-parachute/test-support`: `RecordingLocation`, `recordParachuteEvents`.
 - `installParachute({ readValue })`, for routers that keep values in a shape of their own (ember-rison-qs).
 - TypeScript declarations, values inferred from each `defaultValue`.
 - A site with guides and live examples.

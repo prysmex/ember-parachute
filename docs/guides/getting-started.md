@@ -9,7 +9,7 @@ ember-parachute lets a controller declare its query params once: each one's defa
 ## Install
 
 ```sh
-pnpm add ember-parachute
+pnpm add prysmex-ember-parachute
 ```
 
 It needs Ember 5.8 or later (it is tested up to Ember's alpha), and, for its types, TypeScript 5.4 or later.
@@ -20,7 +20,7 @@ Routes call the controller's hooks only once `installParachute()` has run. Call 
 
 ```ts
 // app/initializers/ember-parachute.ts
-import { installParachute } from 'ember-parachute';
+import { installParachute } from 'prysmex-ember-parachute';
 
 export function initialize() {
   installParachute();
@@ -33,7 +33,7 @@ Or re-export the one the package ships:
 
 ```js
 // app/initializers/ember-parachute.js
-export { default } from 'ember-parachute/initializer';
+export { default } from 'prysmex-ember-parachute/initializer';
 ```
 
 Nothing is installed behind your back: ember-parachute 2 has no app re-exports and no build hooks.
@@ -46,8 +46,8 @@ import Controller from '@ember/controller';
 import QueryParams, {
   type ParachuteEvent,
   type QueryParamValues,
-} from 'ember-parachute';
-import { integer } from 'ember-parachute/adapters';
+} from 'prysmex-ember-parachute';
+import { integer } from 'prysmex-ember-parachute/adapters';
 
 const queryParams = new QueryParams({
   search: { as: 'q', defaultValue: '', refresh: true, replace: true },

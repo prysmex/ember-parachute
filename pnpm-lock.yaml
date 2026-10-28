@@ -240,15 +240,15 @@ importers:
       ember-page-title:
         specifier: ^9.0.3
         version: 9.0.3
-      ember-parachute:
-        specifier: workspace:*
-        version: link:..
       ember-resolver:
         specifier: ^13.2.0
         version: 13.2.0
       ember-source:
         specifier: ~7.4.0
         version: 7.4.0(@glimmer/component@2.2.1)
+      prysmex-ember-parachute:
+        specifier: workspace:*
+        version: link:..
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

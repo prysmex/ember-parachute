@@ -193,7 +193,7 @@ export default class QueryParams<T = Record<string, any>> {
    * Right whether the route has loaded or not: until a split route has
    * loaded, Ember knows nothing of its query params and writes values with
    * `${value}`; once it has, it runs `serialize` again, so a `serialize`
-   * should take its own output (every adapter in `ember-parachute/adapters`
+   * should take its own output (every adapter in `prysmex-ember-parachute/adapters`
    * does). Lists and objects need a `serialize` of their own for links to a
    * route that may not have loaded.
    */

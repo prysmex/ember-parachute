@@ -6,7 +6,7 @@ order: 9
 
 `installParachute()` runs in the app's initializer, so an application test (`setupApplicationTest`) has the hooks already. For a router of the test's own, see the package's own tests (`tests/helpers`): they register a `router:main` on a map of their own.
 
-## `ember-parachute/test-support`
+## `prysmex-ember-parachute/test-support`
 
 ### `RecordingLocation`
 
@@ -14,7 +14,7 @@ A `location: 'none'` that keeps every address the router wrote, and how: `'push'
 
 ```ts
 import EmberRouter from '@ember/routing/router';
-import { RecordingLocation } from 'ember-parachute/test-support';
+import { RecordingLocation } from 'prysmex-ember-parachute/test-support';
 
 class TestRouter extends EmberRouter {
   location = 'recording';
@@ -40,7 +40,7 @@ assert.deepEqual(this.owner.lookup('router:main').location.history, [
 Every hook a controller is called with, in order, until `stop()`:
 
 ```ts
-import { recordParachuteEvents } from 'ember-parachute/test-support';
+import { recordParachuteEvents } from 'prysmex-ember-parachute/test-support';
 
 const recorder = recordParachuteEvents(this.owner.lookup('controller:posts'));
 

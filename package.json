@@ -1,5 +1,5 @@
 {
-  "name": "ember-parachute",
+  "name": "prysmex-ember-parachute",
   "version": "2.0.0",
   "description": "Query params for Ember, declared once: defaults, URL names, (de)serializers, refresh and replace, plus setup / queryParamsDidChange / reset hooks on the controller.",
   "keywords": [

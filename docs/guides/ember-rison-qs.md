@@ -28,7 +28,7 @@ export default class Router extends EmberRouter {
 
 ```ts
 // app/initializers/ember-parachute.ts
-import { installParachute } from 'ember-parachute';
+import { installParachute } from 'prysmex-ember-parachute';
 import { readValue } from 'ember-rison-qs';
 
 export function initialize() {
@@ -47,8 +47,8 @@ The router keeps query params in a shape of its own and hands those to Ember's `
 Rison keeps values typed, so the definitions don't need to turn them into text. An app's convention can say it once, with serializers that return values as they are:
 
 ```ts
-import { queryParamsWithDefaults } from 'ember-parachute';
-import { integer } from 'ember-parachute/adapters';
+import { queryParamsWithDefaults } from 'prysmex-ember-parachute';
+import { integer } from 'prysmex-ember-parachute/adapters';
 
 const identity = (value: unknown) => value;
 

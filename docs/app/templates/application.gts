@@ -23,7 +23,7 @@ import { pageTitle } from 'ember-page-title';
         rel="noopener noreferrer"
       >GitHub</a>
       <a
-        href="https://www.npmjs.com/package/ember-parachute"
+        href="https://www.npmjs.com/package/prysmex-ember-parachute"
         target="_blank"
         rel="noopener noreferrer"
       >npm</a>

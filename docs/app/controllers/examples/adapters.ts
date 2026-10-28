@@ -11,7 +11,7 @@ import {
   number,
   oneOf,
   type Adapter,
-} from 'ember-parachute/adapters';
+} from 'prysmex-ember-parachute/adapters';
 
 const ADAPTERS: Array<{ name: string; adapter: Adapter<any> }> = [
   { name: 'integer()', adapter: integer() },

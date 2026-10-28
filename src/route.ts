@@ -294,7 +294,7 @@ export function isParachuteInstalled(): boolean {
  *
  * ```ts
  * // app/initializers/ember-parachute.ts
- * import { installParachute } from 'ember-parachute';
+ * import { installParachute } from 'prysmex-ember-parachute';
  *
  * export function initialize() {
  *   installParachute();

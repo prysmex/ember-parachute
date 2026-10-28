@@ -2,8 +2,8 @@ import { LinkTo } from '@ember/routing';
 import { pageTitle } from 'ember-page-title';
 
 const QUICK_START = `import Controller from '@ember/controller';
-import QueryParams from 'ember-parachute';
-import { integer, list } from 'ember-parachute/adapters';
+import QueryParams from 'prysmex-ember-parachute';
+import { integer, list } from 'prysmex-ember-parachute/adapters';
 
 const queryParams = new QueryParams({
   search: { as: 'q', defaultValue: '', refresh: true, replace: true },
@@ -54,7 +54,7 @@ export default class PostsController extends Controller {
         started</LinkTo>
       <LinkTo @route="examples" class="button">See it live</LinkTo>
     </p>
-    <pre class="install"><code>pnpm add ember-parachute</code></pre>
+    <pre class="install"><code>pnpm add prysmex-ember-parachute</code></pre>
   </section>
 
   <section class="two-up">

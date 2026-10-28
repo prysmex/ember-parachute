@@ -6,8 +6,8 @@ import { service } from '@ember/service';
 import QueryParams, {
   type ParachuteEvent,
   type QueryParamValues,
-} from 'ember-parachute';
-import { oneOf } from 'ember-parachute/adapters';
+} from 'prysmex-ember-parachute';
+import { oneOf } from 'prysmex-ember-parachute/adapters';
 
 import {
   TABS,

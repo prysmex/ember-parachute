@@ -7,8 +7,8 @@ order: 2
 A `QueryParams` is a set of definitions, keyed by controller property:
 
 ```ts
-import QueryParams from 'ember-parachute';
-import { integer, list, oneOf } from 'ember-parachute/adapters';
+import QueryParams from 'prysmex-ember-parachute';
+import { integer, list, oneOf } from 'prysmex-ember-parachute/adapters';
 
 export const searchQueryParams = new QueryParams({
   search: { as: 'q', defaultValue: '', refresh: true, replace: true },
@@ -74,7 +74,7 @@ When every query param of an app should refresh and replace unless it says other
 
 ```ts
 // app/utils/query-params.ts
-import { queryParamsWithDefaults } from 'ember-parachute';
+import { queryParamsWithDefaults } from 'prysmex-ember-parachute';
 
 export const appQueryParams = queryParamsWithDefaults({
   refresh: true,

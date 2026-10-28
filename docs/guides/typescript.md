@@ -38,7 +38,7 @@ class PostsController extends queryParams.mixInto(Controller) {
 ## Events: `QueryParamValues`
 
 ```ts
-import { type ParachuteEvent, type QueryParamValues } from 'ember-parachute';
+import { type ParachuteEvent, type QueryParamValues } from 'prysmex-ember-parachute';
 
 type Values = QueryParamValues<typeof queryParams>;
 

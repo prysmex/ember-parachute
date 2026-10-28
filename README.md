@@ -1,4 +1,7 @@
-# ember-parachute
+# prysmex-ember-parachute
+
+ember-parachute 2, published as `prysmex-ember-parachute`.
+
 
 Query params for Ember, declared once: each one's default, its name in the address, how it is written and read, and whether a change refreshes data or replaces the history entry. Then `setup`, `queryParamsDidChange` and `reset` hooks on the controller, with what changed, typed. Links and deep links built from the same definitions.
 
@@ -11,24 +14,24 @@ Ember's query params are spread over the controller (`queryParams`, the values),
 ## Install
 
 ```sh
-pnpm add ember-parachute
+pnpm add prysmex-ember-parachute
 ```
 
 Then install the route hooks, once, before the first route is made:
 
 ```js
 // app/initializers/ember-parachute.js
-export { default } from 'ember-parachute/initializer';
+export { default } from 'prysmex-ember-parachute/initializer';
 ```
 
-(or call `installParachute()` from `ember-parachute` yourself: in an initializer, or `app.ts`).
+(or call `installParachute()` from `prysmex-ember-parachute` yourself: in an initializer, or `app.ts`).
 
 ## Quick start
 
 ```ts
 import Controller from '@ember/controller';
-import QueryParams, { type ParachuteEvent, type QueryParamValues } from 'ember-parachute';
-import { integer, list } from 'ember-parachute/adapters';
+import QueryParams, { type ParachuteEvent, type QueryParamValues } from 'prysmex-ember-parachute';
+import { integer, list } from 'prysmex-ember-parachute/adapters';
 
 export const postsQueryParams = new QueryParams({
   search: { as: 'q', defaultValue: '', refresh: true, replace: true },
@@ -60,7 +63,7 @@ export default class PostsController extends postsQueryParams.mixInto(Controller
 Or on the fields, tracked, where a plain assignment is a query param change:
 
 ```ts
-import { queryParam, withParachute } from 'ember-parachute';
+import { queryParam, withParachute } from 'prysmex-ember-parachute';
 
 @withParachute
 export default class PostsController extends Controller {

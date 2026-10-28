@@ -97,7 +97,7 @@ These are pinned by the test suite, as Ember runs them.
 The hooks are methods on the controller. Anything else (a service, a test) can listen too:
 
 ```ts
-import { addParachuteListener } from 'ember-parachute';
+import { addParachuteListener } from 'prysmex-ember-parachute';
 
 const stop = addParachuteListener(
   controller,

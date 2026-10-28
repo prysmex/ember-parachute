@@ -8,8 +8,8 @@ import {
   withParachute,
   type ParachuteEvent,
   type QueryParamMixin,
-} from 'ember-parachute';
-import { integer, list, oneOf } from 'ember-parachute/adapters';
+} from 'prysmex-ember-parachute';
+import { integer, list, oneOf } from 'prysmex-ember-parachute/adapters';
 
 import {
   fetchProducts,

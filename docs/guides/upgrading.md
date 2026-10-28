@@ -6,6 +6,20 @@ order: 13
 
 2.0 keeps 1.x's API, `QueryParams`, its static helpers and the three hooks, and moves off what Ember is deprecating. It's a v2 addon in TypeScript.
 
+## A new package name
+
+2.0 is published as `prysmex-ember-parachute`. Swap the package, then the imports:
+
+```sh
+pnpm remove ember-parachute
+pnpm add prysmex-ember-parachute
+```
+
+```diff
+- import QueryParams from 'ember-parachute';
++ import QueryParams from 'prysmex-ember-parachute';
+```
+
 ## Requirements
 
 Ember 5.8 or later, Node 20 or later, TypeScript 5.4 or later for its types.
@@ -16,7 +30,7 @@ Ember 5.8 or later, Node 20 or later, TypeScript 5.4 or later for its types.
 
 ```js
 // app/initializers/ember-parachute.js
-export { default } from 'ember-parachute/initializer';
+export { default } from 'prysmex-ember-parachute/initializer';
 ```
 
 ## `Controller.extend(qp.Mixin)` → `qp.mixInto(Controller)`

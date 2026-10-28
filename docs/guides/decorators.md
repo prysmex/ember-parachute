@@ -8,8 +8,8 @@ The same definitions, on the controller's fields:
 
 ```ts
 import Controller from '@ember/controller';
-import { queryParam, withParachute } from 'ember-parachute';
-import { integer, list, oneOf } from 'ember-parachute/adapters';
+import { queryParam, withParachute } from 'prysmex-ember-parachute';
+import { integer, list, oneOf } from 'prysmex-ember-parachute/adapters';
 
 @withParachute
 export default class SearchController extends Controller {
@@ -57,7 +57,7 @@ The subclass knows its fields and its parents', so the hooks, `allQueryParams` a
 A decorator can't change a class's type, so tell TypeScript what `@withParachute` adds by merging an interface into the class:
 
 ```ts
-import type { QueryParamMixin } from 'ember-parachute';
+import type { QueryParamMixin } from 'prysmex-ember-parachute';
 
 interface Values {
   search: string;

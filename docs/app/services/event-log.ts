@@ -1,7 +1,7 @@
 import { tracked } from '@glimmer/tracking';
 import Service from '@ember/service';
 
-import { addParachuteListener, type ParachuteEvent } from 'ember-parachute';
+import { addParachuteListener, type ParachuteEvent } from 'prysmex-ember-parachute';
 
 export interface LoggedEvent {
   id: number;

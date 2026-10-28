@@ -4,7 +4,7 @@ order: 6
 
 # Adapters
 
-`ember-parachute/adapters` has ready-made `serialize` / `deserialize` pairs. Spread one into a definition:
+`prysmex-ember-parachute/adapters` has ready-made `serialize` / `deserialize` pairs. Spread one into a definition:
 
 ```ts
 import {
@@ -15,7 +15,7 @@ import {
   list,
   number,
   oneOf,
-} from 'ember-parachute/adapters';
+} from 'prysmex-ember-parachute/adapters';
 
 new QueryParams({
   page: { defaultValue: 1, ...integer(1) },
