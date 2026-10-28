@@ -29,6 +29,8 @@ export interface Adapter<T, S = unknown> {
 const isBlank = (value: unknown) =>
   value === null || value === undefined || value === '';
 
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}(T[\d:.]+(Z|[+-]\d{2}:?\d{2})?)?$/;
+
 const toNumber = (value: unknown) =>
   isBlank(value) || typeof value === 'boolean' ? NaN : Number(value);
 
@@ -159,8 +161,11 @@ export function list<T = string>({
         return values;
       }
 
+      // an item its adapter can't write is left out
       return (values ?? [])
-        .map((value) => String(item ? item.serialize(value) : value))
+        .map((value) => (item ? item.serialize(value) : value))
+        .filter((value) => value !== null && value !== undefined)
+        .map(String)
         .join(separator);
     },
     deserialize(value) {
@@ -197,7 +202,8 @@ export function oneOf<const V extends string, F = V>(
 
 /**
  * A `Date`: as `YYYY-MM-DD` (`{ time: false }`, the default) or a full ISO
- * time. An invalid date reads as `fallback`.
+ * time, in UTC. Only ISO dates read (`2026-10-28`, `2026-10-28T15:30:00Z`):
+ * anything else is `fallback`.
  */
 export function date<F = null>({
   time = false,
@@ -206,9 +212,11 @@ export function date<F = null>({
   return {
     serialize(value) {
       const parsed =
-        value instanceof Date || typeof value === 'string'
-          ? new Date(value)
-          : undefined;
+        value instanceof Date
+          ? value
+          : typeof value === 'string' && ISO_DATE.test(value)
+            ? new Date(value)
+            : undefined;
 
       if (!parsed || Number.isNaN(parsed.valueOf())) {
         return null;
@@ -223,12 +231,11 @@ export function date<F = null>({
         return value;
       }
 
-      if (isBlank(value)) {
+      if (typeof value !== 'string' || !ISO_DATE.test(value)) {
         return fallback;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      const parsed = new Date(String(value));
+      const parsed = new Date(value);
 
       return Number.isNaN(parsed.valueOf()) ? fallback : parsed;
     },

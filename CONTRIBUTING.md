@@ -2,25 +2,43 @@
 
 ## Installation
 
-* `git clone <repository-url>`
-* `cd my-addon`
-* `npm install`
+```sh
+git clone https://github.com/prysmex/ember-parachute.git
+cd ember-parachute
+pnpm install
+```
+
+The repository is the addon itself, at the root, and its site in `docs/` (a pnpm workspace package).
 
 ## Linting
 
-* `npm run lint:hbs`
-* `npm run lint:js`
-* `npm run lint:js -- --fix`
+```sh
+pnpm lint       # eslint, prettier, template-lint, types
+pnpm lint:fix
+```
 
 ## Running tests
 
-* `ember test` – Runs the test suite on the current Ember version
-* `ember test --server` – Runs the test suite in "watch mode"
-* `ember try:each` – Runs the test suite against multiple Ember versions
+```sh
+pnpm test       # builds the tests with Vite and runs them in Chrome
+pnpm start      # the tests in a browser, rebuilt as you edit
+```
 
-## Running the dummy application
+The suite runs with every Ember deprecation enabled (`tests/index.html`): a test that hits one fails, unless it is about 1.x's deprecated paths. `tests/acceptance/ember-contract-test.ts` pins what ember-parachute needs from Ember, on Ember alone.
 
-* `ember serve`
-* Visit the dummy application at [http://localhost:4200](http://localhost:4200).
+Against other Ember versions (the scenarios in `.try.mjs`; CI runs them all):
 
-For more information on using ember-cli, visit [https://ember-cli.com/](https://ember-cli.com/).
+```sh
+pnpm dlx @embroider/try apply ember-lts-6.12
+pnpm install --no-lockfile
+pnpm test
+```
+
+## The site
+
+```sh
+pnpm start:docs   # builds the addon, then serves docs/ with Vite
+pnpm build:docs
+```
+
+Guides are Markdown in `docs/guides/`, compiled by Docfy; the live examples are routes of the docs app (`docs/app/routes`, `controllers`, `templates/examples`).

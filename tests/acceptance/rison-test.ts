@@ -240,7 +240,13 @@ module('Acceptance | with ember-rison-qs', function (hooks) {
   test('leaving and coming back keeps the values, typed', async function (assert) {
     await visit(ADDRESS);
     await visit('/other');
-    await router.transitionTo('list');
+
+    try {
+      await router.transitionTo('list');
+    } catch {
+      // Ember < 7 aborts it for the one that puts the sticky values back
+      await settled();
+    }
 
     assert.deepEqual(
       snapshot({ page: list(this.owner).page, ids: list(this.owner).ids }),

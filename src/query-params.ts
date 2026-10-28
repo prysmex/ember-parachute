@@ -18,7 +18,6 @@ import type {
   QueryParamOptions,
 } from './-private/query-param.ts';
 import type { QueryParamsState } from './-private/state.ts';
-import type Transition from '@ember/routing/transition';
 
 /** What the Mixin adds to a controller. */
 export interface QueryParamMixin<T> {
@@ -26,8 +25,12 @@ export interface QueryParamMixin<T> {
   readonly allQueryParams: T;
   /** Where each query param stands: value, default, whether it changed. */
   readonly queryParamsState: QueryParamsState<T>;
-  /** The route set the controller up (entered, or a new model). */
-  setup?(event: ParachuteEvent<T>, transition: Transition): void;
+  /**
+   * The route set the controller up (entered, or a new model). `transition`
+   * is the route's (a `Transition`), left `unknown` so a subclass can pass
+   * on what it was given.
+   */
+  setup?(event: ParachuteEvent<T>, transition: unknown): void;
   /** A query param changed while on the route. Runs after render. */
   queryParamsDidChange?(event: ParachuteEvent<T>): void;
   /** The route is being left (`isExiting`) or is moving to a new model. */

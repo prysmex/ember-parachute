@@ -6,8 +6,9 @@ import {
   settled,
   visit,
 } from '@ember/test-helpers';
-import { module, test } from 'qunit';
+import { module, skip, test } from 'qunit';
 import { setupApplicationTest } from 'ember-qunit';
+import { dependencySatisfies, macroCondition } from '@embroider/macros';
 import EmbroiderRouter from '@embroider/router';
 
 import QueryParams, { type ParachuteEvent } from '#src/index.ts';
@@ -47,6 +48,13 @@ class IntentsRoute extends Route {
     return {};
   }
 }
+
+// Ember < 7 fails a transition that supersedes one into a split route still
+// loading (router_js reads the unloaded route's inaccessibleByURL), with or
+// without ember-parachute
+const onEmber7 = macroCondition(dependencySatisfies('ember-source', '>=7.0.0'))
+  ? test
+  : skip;
 
 module('Acceptance | split routes (@embroider/router)', function (hooks) {
   setupApplicationTest(hooks);
@@ -193,26 +201,32 @@ module('Acceptance | split routes (@embroider/router)', function (hooks) {
     );
   });
 
-  test('two transitions while the bundle loads: one load, the last one wins', async function (assert) {
-    await visit('/auth/home');
+  onEmber7(
+    'two transitions while the bundle loads: one load, the last one wins',
+    async function (assert) {
+      await visit('/auth/home');
 
-    router.transitionTo('auth.intents', {
-      queryParams: intentsQueryParams.forLink({ tab: 'first' }),
-    });
+      const first = router.transitionTo('auth.intents', {
+        queryParams: intentsQueryParams.forLink({ tab: 'first' }),
+      });
 
-    const last = router.transitionTo('auth.intents', {
-      queryParams: intentsQueryParams.forLink({ tab: 'second' }),
-    });
+      // superseded by the next one: aborted
+      first.catch(() => {});
 
-    gate.resolve();
-    await last;
-    await settled();
+      const last = router.transitionTo('auth.intents', {
+        queryParams: intentsQueryParams.forLink({ tab: 'second' }),
+      });
 
-    assert.deepEqual(
-      { url: currentURL(), loads, route: currentRouteName() },
-      { url: '/auth/intents?tab=second', loads: 1, route: 'auth.intents' },
-    );
-  });
+      gate.resolve();
+      await last;
+      await settled();
+
+      assert.deepEqual(
+        { url: currentURL(), loads, route: currentRouteName() },
+        { url: '/auth/intents?tab=second', loads: 1, route: 'auth.intents' },
+      );
+    },
+  );
 
   test('once loaded, links go through serialize as for any route', async function (assert) {
     gate.resolve();

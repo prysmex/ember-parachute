@@ -135,7 +135,14 @@ module('Unit | adapters', function () {
 
     const ids = list({ separator: '-', item: integer() });
 
-    assert.deepEqual(write(ids, [[1, 2]]), ['1-2']);
+    assert.deepEqual(
+      write(ids, [
+        [1, 2],
+        [1, null, 'x', 2],
+      ]),
+      ['1-2', '1-2'],
+      'an item it cannot write is left out',
+    );
     assert.deepEqual(read(ids, ['1-2-x', [3, '4']]), [
       [1, 2, null],
       [3, 4],
@@ -172,7 +179,18 @@ module('Unit | adapters', function () {
       '2026-10-28T00:00:00.000Z',
     );
     assert.strictEqual(date().deserialize(day), day, 'a Date as it is');
-    assert.deepEqual(read(date(), ['nope', '', null]), [null, null, null]);
+    assert.deepEqual(
+      read(date(), ['nope', '', null, '42', '10/28/2026', 7]),
+      [null, null, null, null, null, null],
+      'only ISO dates',
+    );
+    assert.deepEqual(
+      write(date({ time: true }), [
+        '2026-10-28T15:30:00Z',
+        '2026-10-28T15:30:00+02:00',
+      ]),
+      ['2026-10-28T15:30:00.000Z', '2026-10-28T13:30:00.000Z'],
+    );
     assert.deepEqual(
       snapshot(date({ fallback: 'none' }).deserialize('nope')),
       'none',

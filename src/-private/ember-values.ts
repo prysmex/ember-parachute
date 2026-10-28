@@ -1,4 +1,7 @@
-import { typeOf } from '@ember/utils';
+// Ember's typeOf, for the types its router tells apart (@ember/utils'
+// typeOf is deprecated from 7.5)
+const typeOf = (value: unknown) =>
+  Array.isArray(value) ? 'array' : value === null ? 'null' : typeof value;
 
 /**
  * Ember's own serialization of a query param without `serialize`, by the

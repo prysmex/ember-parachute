@@ -25,11 +25,11 @@ const compatDeps = {
 
 export default {
   scenarios: [
-    {
-      name: 'ember-lts-5.8',
+    ...['5.8', '5.12'].map((version) => ({
+      name: `ember-lts-${version}`,
       npm: {
         devDependencies: {
-          'ember-source': '~5.8.0',
+          'ember-source': `~${version}.0`,
           ...compatDeps,
         },
       },
@@ -37,51 +37,31 @@ export default {
         ENABLE_COMPAT_BUILD: true,
       },
       files: compatFiles,
-    },
-    {
-      name: 'ember-lts-5.12',
+    })),
+    ...['6.4', '6.8', '6.12'].map((version) => ({
+      name: `ember-lts-${version}`,
       npm: {
         devDependencies: {
-          'ember-source': '~5.12.0',
-          ...compatDeps,
+          'ember-source': `npm:ember-source@~${version}.0`,
         },
       },
-      env: {
-        ENABLE_COMPAT_BUILD: true,
-      },
-      files: compatFiles,
-    },
+    })),
+    // the version Prysmex runs
     {
-      name: 'ember-lts-6.4',
+      name: 'ember-7.3',
       npm: {
         devDependencies: {
-          'ember-source': 'npm:ember-source@~6.4.0',
+          'ember-source': 'npm:ember-source@~7.3.0',
         },
       },
     },
-    {
-      name: 'ember-latest',
+    ...['latest', 'beta', 'alpha'].map((tag) => ({
+      name: `ember-${tag}`,
       npm: {
         devDependencies: {
-          'ember-source': 'npm:ember-source@latest',
+          'ember-source': `npm:ember-source@${tag}`,
         },
       },
-    },
-    {
-      name: 'ember-beta',
-      npm: {
-        devDependencies: {
-          'ember-source': 'npm:ember-source@beta',
-        },
-      },
-    },
-    {
-      name: 'ember-alpha',
-      npm: {
-        devDependencies: {
-          'ember-source': 'npm:ember-source@alpha',
-        },
-      },
-    },
+    })),
   ],
 };
