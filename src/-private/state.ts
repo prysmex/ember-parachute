@@ -97,9 +97,15 @@ export function setDefaultValue(
 ) {
   const { queryParams } = metaFor(controller);
 
+  const queryParam = queryParams[param];
+
   assert(
     `[ember-parachute] The query parameter '${param}' does not exist.`,
-    queryParams[param],
+    queryParam,
   );
-  set(queryParams[param], 'defaultValue', defaultValue);
+
+  // without assertions (production): nothing to set
+  if (queryParam) {
+    set(queryParam, 'defaultValue', defaultValue);
+  }
 }

@@ -160,19 +160,30 @@ module('Acceptance | Ember contract', function (hooks) {
       ]);
     });
 
-    test("transition.routeInfos: isResolved, route, routePromise (deserialize's wait)", async function (assert) {
+    test("transition.routeInfos: isResolved, route, routePromise -- or, from 7.5, managementPromise, hasResolvedManagement (deserialize's wait)", async function (assert) {
       register(
         this.owner,
         'route:detail',
         class extends Route {
           deserialize(params: Record<string, unknown>, transition: any) {
             seen.push(
-              transition.routeInfos.map((routeInfo: any) => [
-                routeInfo.name,
-                typeof routeInfo.isResolved,
-                typeof routeInfo.route,
-                typeof routeInfo.routePromise?.then,
-              ]),
+              transition.routeInfos.map((routeInfo: any) =>
+                // Ember 7.5's route managers: the route's management in
+                // place of the route
+                'managementPromise' in routeInfo
+                  ? [
+                      routeInfo.name,
+                      typeof routeInfo.isResolved,
+                      typeof routeInfo.managementPromise?.then,
+                      routeInfo.hasResolvedManagement,
+                    ]
+                  : [
+                      routeInfo.name,
+                      typeof routeInfo.isResolved,
+                      typeof routeInfo.routePromise?.then,
+                      typeof routeInfo.route === 'object',
+                    ],
+              ),
             );
 
             return super.deserialize(params, transition);
@@ -182,10 +193,11 @@ module('Acceptance | Ember contract', function (hooks) {
 
       await visit('/detail/1');
 
+      // routes loaded: a promise, and the route (or its management) there
       assert.deepEqual(seen, [
         [
-          ['application', 'boolean', 'object', 'function'],
-          ['detail', 'boolean', 'object', 'function'],
+          ['application', 'boolean', 'function', true],
+          ['detail', 'boolean', 'function', true],
         ],
       ]);
     });

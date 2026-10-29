@@ -40,14 +40,16 @@ How that's checked:
 - **The whole test suite runs with every Ember deprecation enabled**, the ones not enabled yet included (`EmberENV._ALL_DEPRECATIONS_ENABLED`). A test that hits a deprecation fails, except the ones about 1.x's deprecated paths.
 - **An Ember contract suite** (`tests/acceptance/ember-contract-test.ts`): one test for each thing parachute needs Ember to keep doing, named after it, run on Ember alone (`setupController(controller, model, transition)`, the `queryParamsDidChange` action's arguments, `transition.routeInfos`, a route's `queryParams[key].replace` read when a value changes, tracked query params, ...). An Ember that changes one fails that test by name.
 - **Every Ember from 5.8**: the CI runs the suite on Ember 5.8, 5.12, 6.4, 6.8, 6.12, 7.3, the latest, the beta and the alpha.
-
-### Ember 7.5 (alpha, October 2026)
-
-7.5 brings route managers (the NavigationState RFC), and with them a router that waits for a route's ancestors itself. On 7.5.0-alpha.5 the whole suite passes but for:
-
-- the contract test for `transition.routeInfos`: its items no longer have `route` / `routePromise`, so `deserialize`'s wait for split routes doesn't run. It isn't needed there: the split route tests pass on the alpha, the router waiting by itself. The test stays, failing by name, until 7.5 is released and the wait can be dropped for it;
-- the ember-rison-qs tests: ember-rison-qs doesn't run on the alpha yet (it finds no `route.serializeQueryParam` to replace).
+- **Router contract warnings**: where ember-parachute uses what Ember's router gives it (`transition.routeInfos`' loading promises, the name in the address `serializeQueryParam` gets, the `queryParamsDidChange` action and its arguments, a route's owner), it checks it is there. An Ember that changes one gets a warning in development (`ember-parachute.router-contract`, once each) instead of ember-parachute silently doing nothing; ember-parachute's own tests fail on any.
 - **Whole-log pins**: the hooks, the addresses and their push / replace, as Ember produces them, compared whole. A change in Ember's routing shows as a diff.
+
+### Ember 7.5 (beta, October 2026)
+
+7.5 brings route managers (the NavigationState RFC). The items of `transition.routeInfos` no longer have `route` / `routePromise`, but `managementPromise` / `hasResolvedManagement` (the route's manager, in place of the route). `deserialize`'s wait for split routes reads either.
+
+The router doesn't wait for a split route's bundle before its parents' model hooks: on a deep link, without ember-parachute's wait, a parent's `paramsFor('the.split.route')` is `{}` on 7.5 (its values, typed, before). With it, 7.5 runs the hooks in 7.4's order. The split route tests hold the bundle back long enough to tell.
+
+The whole suite passes on 7.5.0-beta.1 and 7.5.0-alpha.5, ember-rison-qs's tests included (from ember-rison-qs 2.0.4).
 
 ## Does it need to be an addon?
 

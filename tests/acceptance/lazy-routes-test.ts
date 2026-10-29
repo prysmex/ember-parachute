@@ -124,10 +124,23 @@ module('Acceptance | split routes (@embroider/router)', function (hooks) {
   });
 
   test('a deep link into the unloaded route: the values, typed, once it loads', async function (assert) {
+    register(
+      this.owner,
+      'route:auth',
+      class extends Route {
+        model() {
+          log.push(['auth:model', snapshot(this.paramsFor('auth.intents'))]);
+        }
+      },
+    );
+
     const address = `/auth/intents?intent=${encodeURIComponent(JSON.stringify(INTENT))}&tab=files`;
     const visiting = visit(address);
 
-    await Promise.resolve();
+    // the bundle takes a while: long enough for a model hook not waiting
+    // for it to run first
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    log.push('slow bundle arrives');
     gate.resolve();
     await visiting;
 
@@ -135,10 +148,12 @@ module('Acceptance | split routes (@embroider/router)', function (hooks) {
       url: address,
       log: [
         'load',
+        'slow bundle arrives',
         // the parent waits for the bundle: its query params are known
-        // before the first model hook
+        // before the first model hook (on Ember 7.5, only by
+        // ember-parachute: the router doesn't wait)
         'loaded',
-        'auth:model',
+        ['auth:model', { intent: INTENT, raw: null, tab: 'files' }],
         ['model', { intent: INTENT, raw: null, tab: 'files' }],
         ['setup', { intent: INTENT, raw: null, tab: 'files' }],
       ],

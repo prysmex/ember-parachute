@@ -5,6 +5,7 @@ import Route from '@ember/routing/route';
 import { schedule } from '@ember/runloop';
 
 import { config, type ParachuteOptions } from './-private/config.ts';
+import { expectRouter, resetRouterContract } from './-private/contract.ts';
 import { hasDecoratedQueryParams } from './-private/decorated.ts';
 import ParachuteEvent from './-private/event.ts';
 import { notify } from './-private/listeners.ts';
@@ -30,6 +31,26 @@ interface RouteInfoLike {
   isResolved?: boolean;
   route?: object;
   routePromise?: PromiseLike<unknown>;
+  // Ember 7.5 (route managers): the route's manager in place of the route
+  managementPromise?: PromiseLike<unknown>;
+  hasResolvedManagement?: boolean;
+}
+
+// The promise of a route of the transition whose bundle is still loading
+function loadingPromise(routeInfo: RouteInfoLike) {
+  if (routeInfo.isResolved) {
+    return undefined;
+  }
+
+  if ('managementPromise' in routeInfo) {
+    // reading it fetches the route, as the router would: a loaded route
+    // has its management then
+    const promise = routeInfo.managementPromise;
+
+    return routeInfo.hasResolvedManagement ? undefined : promise;
+  }
+
+  return routeInfo.route === undefined ? routeInfo.routePromise : undefined;
 }
 
 interface Factory {
@@ -77,10 +98,16 @@ function lookupController(route: RouteLike): object | undefined {
     return controller;
   }
 
+  const owner = getOwner(route);
+
+  expectRouter(
+    owner !== undefined,
+    "a route has no owner, so a link to a route not entered yet doesn't run its query params' serialize",
+  );
+
   const controllerName = route.controllerName || route.routeName;
-  const factory = getOwner(route)?.factoryFor(
-    `controller:${controllerName}`,
-  ) as Factory | undefined;
+  const factory = owner?.factoryFor(`controller:${controllerName}`) as
+    Factory | undefined;
 
   // proto(): a classic class applies its mixins to its prototype then
   return factory?.class.proto?.() ?? factory?.class.prototype;
@@ -128,6 +155,15 @@ function wrapQueryParamsDidChange(original: Fn): Fn {
     removed: Record<string, unknown> = {},
   ) {
     const { controller, routeName } = this;
+
+    // eslint-disable-next-line prefer-rest-params
+    const [given] = arguments as unknown as unknown[];
+
+    expectRouter(
+      typeof given === 'object' && given !== null,
+      "Route's queryParamsDidChange action no longer gets what changed first, so the controller's queryParamsDidChange gets no changes",
+    );
+
     const routes = scheduled.get(changed) ?? new WeakSet<object>();
 
     if (controller && hasParachute(controller) && !routes.has(this)) {
@@ -165,6 +201,24 @@ function wrapActionsOf(target: { actions?: Record<string, Fn> }) {
   }
 }
 
+/**
+ * The definition a route's (de)serializeQueryParam is called for: Ember
+ * passes the name in the address.
+ */
+function queryParamFor(controller: object, urlKey: unknown) {
+  const queryParam = QueryParams.lookupQueryParam(controller, urlKey as string);
+
+  expectRouter(
+    queryParam !== undefined ||
+      !QueryParams.metaFor(controller).queryParamsArray.some(
+        (qp) => qp.key === urlKey && qp.as !== urlKey,
+      ),
+    "a route's serializeQueryParam / deserializeQueryParam get the property name, not the name in the address, so query params with `as` skip their serialize / deserialize",
+  );
+
+  return queryParam;
+}
+
 function hooks(): Record<(typeof HOOKS)[number], (original: Fn) => Fn> {
   return {
     setupController: (original) =>
@@ -178,6 +232,14 @@ function hooks(): Record<(typeof HOOKS)[number], (original: Fn) => Fn> {
         original.apply(this, arguments as unknown as unknown[]);
 
         if (hasParachute(controller)) {
+          expectRouter(
+            typeof this.routeName === 'string',
+            'a route has no routeName, so the hooks are called with no route name',
+          );
+          expectRouter(
+            typeof this.actions?.queryParamsDidChange === 'function',
+            "a route has no queryParamsDidChange action, so the controller's queryParamsDidChange is never called",
+          );
           wrapActionsOf(this);
           setupQueryParamsMap(this, controller);
 
@@ -222,23 +284,30 @@ function hooks(): Record<(typeof HOOKS)[number], (original: Fn) => Fn> {
         transition?: { routeInfos?: RouteInfoLike[] },
       ) {
         const routeInfos = transition?.routeInfos;
-        const loading = Array.isArray(routeInfos)
-          ? routeInfos.filter(
+
+        expectRouter(
+          !Array.isArray(routeInfos) ||
+            routeInfos.every(
               (routeInfo) =>
-                !routeInfo.isResolved &&
-                routeInfo.route === undefined &&
-                routeInfo.routePromise !== undefined,
-            )
+                'managementPromise' in routeInfo || 'routePromise' in routeInfo,
+            ),
+          "transition.routeInfos have neither routePromise nor managementPromise, so a route's deserialize doesn't wait for split routes still loading (a parent's paramsFor them is {} on a deep link)",
+        );
+
+        const loading = Array.isArray(routeInfos)
+          ? routeInfos
+              .map(loadingPromise)
+              .filter((promise) => promise !== undefined)
           : [];
 
         if (loading.length === 0) {
           return original.call(this, params, transition);
         }
 
-        let loaded = loading[0]!.routePromise!;
+        let loaded = loading[0]!;
 
-        for (const routeInfo of loading.slice(1)) {
-          loaded = loaded.then(() => routeInfo.routePromise);
+        for (const promise of loading.slice(1)) {
+          loaded = loaded.then(() => promise);
         }
 
         return loaded.then(() => original.call(this, params, transition));
@@ -249,7 +318,7 @@ function hooks(): Record<(typeof HOOKS)[number], (original: Fn) => Fn> {
         const controller = lookupController(this);
 
         if (controller && hasParachute(controller)) {
-          const queryParam = QueryParams.lookupQueryParam(controller, urlKey);
+          const queryParam = queryParamFor(controller, urlKey);
 
           if (typeof queryParam?.serialize === 'function') {
             return queryParam.serialize(value, controller);
@@ -265,7 +334,7 @@ function hooks(): Record<(typeof HOOKS)[number], (original: Fn) => Fn> {
         const controller = lookupController(this);
 
         if (controller && hasParachute(controller)) {
-          const queryParam = QueryParams.lookupQueryParam(controller, urlKey);
+          const queryParam = queryParamFor(controller, urlKey);
 
           if (typeof queryParam?.deserialize === 'function') {
             return queryParam.deserialize(value, controller) as unknown;
@@ -364,6 +433,7 @@ export function uninstallParachute(): void {
 
   originals.clear();
   wrappedActions.clear();
+  resetRouterContract();
   config.readValue = (value) => value;
   config.sendEvent = undefined;
   delete (Route as unknown as Record<string, unknown>)[INSTALLED];

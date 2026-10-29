@@ -24,6 +24,12 @@ export function snapshot(value: unknown): any {
   );
 }
 
+/**
+ * The router contract warnings of the current test: the test fails with
+ * any left (a test expecting one empties it).
+ */
+export const routerWarnings: string[] = [];
+
 /** Registers, replacing whatever was there. */
 export function register(owner: Owner, name: string, factory: unknown) {
   // a test's owner can unregister, the public Owner type doesn't say so

@@ -1024,11 +1024,49 @@ for (const style of ['mixInto', 'Mixin'] as const) {
 
       order.push(`model ${model.id}`);
 
+      // Ember 7.5's route managers: the route's management in place of the
+      // route
+      const managed = deferred();
+      const managedReady = route.deserialize(
+        { id: '7' },
+        {
+          routeInfos: [
+            {
+              managementPromise: Promise.resolve(),
+              hasResolvedManagement: true,
+            },
+          ],
+        },
+      );
+      const managedWaiting = route.deserialize(
+        { id: '8' },
+        {
+          routeInfos: [
+            {
+              managementPromise: Promise.resolve(),
+              hasResolvedManagement: true,
+            },
+            {
+              isResolved: false,
+              hasResolvedManagement: false,
+              managementPromise: managed.promise.then(() =>
+                order.push('managed loaded'),
+              ),
+            },
+          ],
+        },
+      );
+
+      order.push(managedWaiting instanceof Promise ? 'promise' : 'value');
+      managed.resolve();
+      order.push(`model ${(await managedWaiting).id}`);
+
       assert.deepEqual(
         snapshot({
           ready,
           readyIsPromise: ready instanceof Promise,
           noInfos,
+          managedReady,
           order,
           models: log.filter(([kind]) => kind === 'model'),
         }),
@@ -1036,12 +1074,22 @@ for (const style of ['mixInto', 'Mixin'] as const) {
           ready: { id: '5' },
           readyIsPromise: false,
           noInfos: { id: '4' },
-          order: ['promise', 'loaded', 'model 6'],
+          managedReady: { id: '7' },
+          order: [
+            'promise',
+            'loaded',
+            'model 6',
+            'promise',
+            'managed loaded',
+            'model 8',
+          ],
           models: [
             ['model', 'detail', '1'],
             ['model', 'detail', '5'],
             ['model', 'detail', '4'],
             ['model', 'detail', '6'],
+            ['model', 'detail', '7'],
+            ['model', 'detail', '8'],
           ],
         },
       );

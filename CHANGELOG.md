@@ -27,10 +27,13 @@ A v2 addon, in TypeScript, on native classes, ready for Ember 8. See [Upgrading 
 - `installParachute({ readValue })`, for routers that keep values in a shape of their own (ember-rison-qs).
 - TypeScript declarations, values inferred from each `defaultValue`.
 - A site with guides and live examples.
+- Router contract warnings (`ember-parachute.router-contract`, development only): an Ember whose router no longer gives ember-parachute what it needs says so, instead of the hooks or serializers silently not running.
 
 ### Fixed
 
 - The route's `deserialize` waits only while a route of the transition is still loading, and on the router's own promises: a transition whose routes have loaded no longer shows a loading substate.
+- `setDefaultQueryParamValue` with an unknown key does nothing in production (it threw a `TypeError`; development still asserts).
+- On Ember 7.5 (route managers), `deserialize` waits for split routes still loading too: a parent's model hook sees their query params, typed, as on 7.4.
 - Routes whose class has an `@action` (its own copy of Route's actions, made before the hooks were installed) get `queryParamsDidChange`.
 - A link to a route without a controller of its own no longer fails.
 - An app's own `queryParamsDidChange` action calling `super` doesn't schedule the event twice.
