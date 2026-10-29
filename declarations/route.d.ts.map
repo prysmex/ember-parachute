@@ -1,0 +1,1 @@
+{"version":3,"file":"route.d.ts","sourceRoot":"","sources":["../src/route.ts"],"names":[],"mappings":"AAMA,OAAO,EAAU,KAAK,gBAAgB,EAAE,MAAM,sBAAsB,CAAC;AAQrE,YAAY,EAAE,gBAAgB,EAAE,MAAM,sBAAsB,CAAC;AA+U7D,2EAA2E;AAC3E,wBAAgB,oBAAoB,IAAI,OAAO,CAE9C;AAED;;;;;;;;;;;;;;;;;;;GAmBG;AACH,wBAAgB,gBAAgB,CAAC,OAAO,GAAE,gBAAqB,GAAG,IAAI,CAmCrE;AAED;;;GAGG;AACH,wBAAgB,kBAAkB,IAAI,IAAI,CAwBzC"}
